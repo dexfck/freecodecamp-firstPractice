@@ -25,7 +25,7 @@ app.get('/api', (req,res) => {
   return res.json({unix: unixDate, utc: newDate.toUTCString()})
 })
 
-app.get("/api/:date", (req, res) => {
+app.get("/api/:date?", (req, res) => {
   let dateString = req.params.date;
 
   if (/\d{5,}/.test(dateString)) {
