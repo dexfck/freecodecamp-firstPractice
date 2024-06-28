@@ -18,29 +18,23 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// timestamp endpoint with no parameter...
+app.get("/api/", function(req, res) {
+  const resDate = new Date();
+  res.json({ unix: resDate.valueOf(), utc: resDate.toUTCString() });
+});
 
-app.get('/api', (req,res) => {
-  const newDate = new Date()
-  const unixDate = (newDate / 1000)
-  return res.json({unix: unixDate, utc: newDate.toUTCString()})
-})
-
-app.get("/api/:date?", (req, res) => {
-  let dateString = req.params.date;
-
-  if (/\d{5,}/.test(dateString)) {
-    let dateInt = parseInt(dateString);
-    
-    return res.json({ unix: dateString, utc: new Date(dateInt).toUTCString() });
-  } else {
-    let dateObject = new Date(dateString);
-
-    if (dateObject.toString() === "Invalid Date") {
-      return res.json({ error: "Invalid Date" });
-    } else {
-      return res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
-    }
+// normal timestamp endpoint...
+app.get("/api/:date_string?", function(req, res) {
+  const reqString = req.params.date_string;
+  // check to see if the string is a unix timestamp (in this challenge we can just see if it contains a dash as the 5th character), and perform the conversion to an integer if necessary
+  if (!/^\d{4}-/.test(reqString)) reqString = parseInt(reqString);
+  const resDate = new Date(reqString);
+  // this comparision is used to see if the date is a valid date, is there another way to do this?
+  if (resDate.getTime() !== resDate.getTime()) {
+    res.json({ error: "Invalid Date" });
   }
+  res.json({ unix: resDate.valueOf(), utc: resDate.toUTCString() });
 });
 
 // Listen on port set in environment variable or default to 3000
