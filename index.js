@@ -19,21 +19,26 @@ app.get("/", function (req, res) {
 });
 
 
-app.get("/api/:date_string", (req, res) => {
-  let dateString = req.params.date_string;
+app.get('/api', (req,res) => {
+  const newDate = new Date()
+  const unixDate = (newDate / 1000)
+  return res.json({unix: unixDate, utc: newDate.toUTCString()})
+})
 
- 
+app.get("/api/:date", (req, res) => {
+  let dateString = req.params.date;
+
   if (/\d{5,}/.test(dateString)) {
     let dateInt = parseInt(dateString);
     
-    res.json({ unix: dateString, utc: new Date(dateInt).toUTCString() });
+    return res.json({ unix: dateString, utc: new Date(dateInt).toUTCString() });
   } else {
     let dateObject = new Date(dateString);
 
     if (dateObject.toString() === "Invalid Date") {
-      res.json({ error: "Invalid Date" });
+      return res.json({ error: "Invalid Date" });
     } else {
-      res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
+      return res.json({ unix: dateObject.valueOf(), utc: dateObject.toUTCString() });
     }
   }
 });
